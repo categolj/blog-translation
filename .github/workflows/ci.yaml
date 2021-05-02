@@ -21,7 +21,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: mvn package
+      env:
+        _JAVA_OPTIONS: -Djava.net.preferIPv4Stack=true
       run: |
         set -e
         BOOT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's|<.*>||g' | xargs echo)
-        ./mvnw -V package -DskipTests -Dspring-boot.version=${BOOT_VERSION}
+        ./mvnw -V package -Dspring-boot.version=${BOOT_VERSION}

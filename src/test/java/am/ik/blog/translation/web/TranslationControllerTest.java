@@ -7,6 +7,7 @@ import java.util.Optional;
 import am.ik.blog.translation.Translation;
 import am.ik.blog.translation.TranslationKey;
 import am.ik.blog.translation.TranslationMapper;
+import am.ik.blog.translator.EntryTranslator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -31,6 +31,9 @@ class TranslationControllerTest {
 
 	@MockBean
 	TranslationMapper translationMapper;
+
+	@MockBean
+	EntryTranslator entryTranslator;
 
 	@Test
 	void getAllRevisionsOfTranslation() throws Exception {
@@ -137,7 +140,7 @@ class TranslationControllerTest {
 		given(this.translationMapper.insert(any())).willReturn(1);
 		this.mockMvc.perform(post("/translations/{entryId}", entryId)
 				.content("""
-						{"title": "Hello World!", "content": "This is a test content.", "language": "%s"}
+						{"title": "Hello World 2!", "content": "This is a test content 2.", "language": "%s"}
 						""".formatted(language))
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isCreated())
@@ -145,8 +148,8 @@ class TranslationControllerTest {
 				.andExpect(jsonPath("$.entryId").value(entryId))
 				.andExpect(jsonPath("$.language").value(language))
 				.andExpect(jsonPath("$.revision").value(101))
-				.andExpect(jsonPath("$.title").value("Hello World!"))
-				.andExpect(jsonPath("$.content").value("This is a test content."))
+				.andExpect(jsonPath("$.title").value("Hello World 2!"))
+				.andExpect(jsonPath("$.content").value("This is a test content 2."))
 				.andExpect(jsonPath("$.createdAt").isString());
 	}
 

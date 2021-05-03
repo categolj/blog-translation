@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +38,7 @@ public class TranslationMapper {
 				entryId, language);
 	}
 
-	@Nullable
-	public Optional<Translation> getLatestTranslation(Long entryId, @Nullable String language) {
+	public Optional<Translation> getLatestTranslation(Long entryId, String language) {
 		try (final Stream<Translation> stream = this.jdbcTemplate.queryForStream("""
 						SELECT entry_id, language, revision, title, content, created_at FROM translation WHERE entry_id = ? AND language = ? ORDER BY revision DESC LIMIT 1
 						""", this.translationRowMapper,
@@ -49,7 +47,6 @@ public class TranslationMapper {
 		}
 	}
 
-	@Nullable
 	public Optional<Translation> getTranslation(TranslationKey translationKey) {
 		try (final Stream<Translation> stream = this.jdbcTemplate.queryForStream("""
 						SELECT entry_id, language, revision, title, content, created_at FROM translation WHERE entry_id = ? AND language = ? AND revision = ?

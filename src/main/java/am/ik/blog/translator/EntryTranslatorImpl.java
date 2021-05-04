@@ -1,7 +1,5 @@
 package am.ik.blog.translator;
 
-import java.time.Instant;
-
 import am.ik.blog.translator.text.TextTranslator;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -37,9 +35,9 @@ public class EntryTranslatorImpl implements EntryTranslator {
 			final String translatedContent = this.textTranslator.translate(content, "ja", language);
 			return new Translated(entryId, language, translatedTitle,
 					"""
-							> ⚠️ **WARNING:** This article was automatically translated on %s. <br> Please note that eventually it may be edited, but it may contain incorrect information at this time.			
+							> ⚠️ **WARNING:** This article was automatically translated. <br> Please note that eventually it may be edited, but it may contain incorrect information at this time.			
 										       
-							""".formatted(Instant.now())
+							"""
 							+ translatedContent);
 		}
 		catch (RestClientResponseException e) {

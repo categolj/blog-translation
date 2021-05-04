@@ -37,7 +37,7 @@ public class EntryTranslatorImpl implements EntryTranslator {
 			final String translatedContent = this.textTranslator.translate(content, "ja", language);
 			return new Translated(entryId, language, translatedTitle,
 					"""
-							> **INFO:** This article was automatically translated on %s. Please note that eventually it may be edited, but it may contain incorrect information at this time.			
+							> ⚠️ **WARNING:** This article was automatically translated on %s. <br> Please note that eventually it may be edited, but it may contain incorrect information at this time.			
 										       
 							""".formatted(Instant.now())
 							+ translatedContent);

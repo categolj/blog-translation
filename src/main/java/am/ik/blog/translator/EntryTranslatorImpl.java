@@ -32,13 +32,14 @@ public class EntryTranslatorImpl implements EntryTranslator {
 			final String title = entry.get("frontMatter").get("title").asText();
 			final String content = entry.get("content").asText();
 			final String translatedTitle = this.textTranslator.translate(title, "ja", language).trim();
-			final String translatedContent = this.textTranslator.translate(content, "ja", language);
-			return new Translated(entryId, language, translatedTitle,
+			final String translatedContent = this.textTranslator.translate("""
+					> ⚠️ **注意**: この記事は自動的に翻訳されました。 <br>最終的には編集される可能性がありますが、現時点では誤った情報が含まれている可能性があることに注意してください。		
+					
+					<br>
+					
 					"""
-							> ⚠️ **WARNING:** This article was automatically translated. <br> Please note that eventually it may be edited, but it may contain incorrect information at this time.			
-										       
-							"""
-							+ translatedContent);
+					+ content, "ja", language);
+			return new Translated(entryId, language, translatedTitle, translatedContent);
 		}
 		catch (RestClientResponseException e) {
 			throw new ResponseStatusException(HttpStatus.valueOf(e.getRawStatusCode()), e.getMessage(), e);

@@ -77,9 +77,9 @@ public class GoogleTranslator implements TextTranslator {
 				.replace("\"Http", "\"http")
 				.replaceAll("curl([\\-a-zA-Z0-9 ]+)Http", "curl$1http")
 				.replace(": Http", ": http")
-				.replace("<!-- toc -->", "HEREISTOC")
-				.replace("<br>", "HEREISBR")
-				.replace("<img", "BEGINIMG")
+				.replace("<!-- toc -->", "ZZZZTOC")
+				.replace("<br>", "ZZZZBR")
+				.replace("<img", "ZZZZIMG")
 				.replaceAll("\\[(https?://[a-zA-Z0-9]+)\\]\\(https?://[a-zA-Z0-9]+\\)", "$1");
 		final Document document = this.parser.parse(preparedText);
 		final TranslationHandler translationHandler = this.formatter.getTranslationHandler();
@@ -97,14 +97,14 @@ public class GoogleTranslator implements TextTranslator {
 		if (false) {
 			// debug
 			return formattedDocument + System.lineSeparator() + "------------------------------------------------" + System.lineSeparator() + System.lineSeparator() +
-					formattedTranslate.replace("HEREISTOC", System.lineSeparator() + "<!-- toc -->")
-							.replace("HEREISBR", "<br>")
-							.replace("BEGINIMG", "<img");
+					formattedTranslate.replace("ZZZZTOC", System.lineSeparator() + "<!-- toc -->")
+							.replace("ZZZZBR", "<br>")
+							.replace("ZZZZIMG", "<img");
 		}
 		return this.formatter.translationRender(this.parser.parse(formattedTranslate), translationHandler, RenderPurpose.TRANSLATED)
-				.replace("HEREISTOC", System.lineSeparator() + "<!-- toc -->")
-				.replace("HEREISBR", "<br>")
-				.replace("BEGINIMG", "<img");
+				.replace("ZZZZTOC", System.lineSeparator() + "<!-- toc -->")
+				.replace("ZZZZBR", "<br>")
+				.replace("ZZZZIMG", "<img");
 	}
 
 	String doTranslate(String text, String source, String target) {

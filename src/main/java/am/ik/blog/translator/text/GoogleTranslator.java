@@ -68,16 +68,19 @@ public class GoogleTranslator implements TextTranslator {
 		final String preparedText = text
 				.replace("[http", "[Http")
 				.replace("(http", "(Http")
+				.replace("\"http", "\"Http")
 				.replaceAll("curl([\\-a-zA-Z0-9 ]+)http", "curl$1Http")
 				.replace(": http", ": Http")
 				.replaceAll("(" + URL_PATTERN + ")", "[$1]($1)")
 				.replace("[Http", "[http")
 				.replace("(Http", "(http")
+				.replace("\"Http", "\"http")
 				.replaceAll("curl([\\-a-zA-Z0-9 ]+)Http", "curl$1http")
 				.replace(": Http", ": http")
 				.replace("<!-- toc -->", "HEREISTOC")
 				.replace("<br>", "HEREISBR")
-				.replaceAll("\\[(https?://[a-zA-Z0-9]+)\\]\\(https?://[a-zA-Z0-9]+\\)","$1");
+				.replace("<img", "BEGINIMG")
+				.replaceAll("\\[(https?://[a-zA-Z0-9]+)\\]\\(https?://[a-zA-Z0-9]+\\)", "$1");
 		final Document document = this.parser.parse(preparedText);
 		final TranslationHandler translationHandler = this.formatter.getTranslationHandler();
 		this.formatter.translationRender(document, translationHandler, RenderPurpose.TRANSLATION_SPANS);
@@ -93,11 +96,15 @@ public class GoogleTranslator implements TextTranslator {
 				.replaceAll("\\s(_\\d+_\\n)", "$1");
 		if (false) {
 			// debug
-			return formattedDocument + System.lineSeparator() + "------------------------------------------------" + System.lineSeparator() + System.lineSeparator() + formattedTranslate;
+			return formattedDocument + System.lineSeparator() + "------------------------------------------------" + System.lineSeparator() + System.lineSeparator() +
+					formattedTranslate.replace("HEREISTOC", System.lineSeparator() + "<!-- toc -->")
+							.replace("HEREISBR", "<br>")
+							.replace("BEGINIMG", "<img");
 		}
 		return this.formatter.translationRender(this.parser.parse(formattedTranslate), translationHandler, RenderPurpose.TRANSLATED)
 				.replace("HEREISTOC", System.lineSeparator() + "<!-- toc -->")
-				.replace("HEREISBR", "<br>");
+				.replace("HEREISBR", "<br>")
+				.replace("BEGINIMG", "<img");
 	}
 
 	String doTranslate(String text, String source, String target) {

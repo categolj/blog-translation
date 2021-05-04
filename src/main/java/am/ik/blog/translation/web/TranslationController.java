@@ -87,8 +87,8 @@ public class TranslationController {
 		}
 	}
 
-	@PostMapping(path = "auto/{language}")
-	public ResponseEntity<?> postTranslationAutomatically(@PathVariable("entryId") Long entryId, @PathVariable("language") String language, UriComponentsBuilder builder) {
+	@PostMapping(path = "auto")
+	public ResponseEntity<?> postTranslationAutomatically(@PathVariable("entryId") Long entryId, @RequestParam(name = "language", defaultValue = "en") String language, UriComponentsBuilder builder) {
 		final Translated translated = this.entryTranslator.translate(entryId, language);
 		final Translation translation = this.addNewTranslation(translated.entryId(), translated.language(), translated.title(), translated.content());
 		final TranslationKey translationKey = translation.translationKey();

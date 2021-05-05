@@ -27,3 +27,51 @@ jobs:
         set -e
         BOOT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's|<.*>||g' | xargs echo)
         ./mvnw -V package -Dspring-boot.version=${BOOT_VERSION}
+    - name: mvn deploy
+      if: github.ref == 'refs/heads/main'
+      env:
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      run: |
+        set -e
+        BOOT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's|<.*>||g' | xargs echo)
+        cat > settings.xml <<EOF
+        <settings>
+          <servers>
+            <server>
+               <id>sonatype-snapshots</id>
+               <username>${SONATYPE_USERNAME}</username>
+               <password>${SONATYPE_PASSWORD}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+        sed -i 's|</project>|<distributionManagement><repository><id>sonatype-snapshots</id><name>sonatype-snapshots</name><url>https://oss.sonatype.org/content/repositories/snapshots</url></repository></distributionManagement></project>|' pom.xml
+        ./mvnw -V deploy -s settings.xml -Dmaven.test.skip=true -Dspring-boot.version=${BOOT_VERSION}
+    - name: mvn spring-boot:build-image
+      if: github.ref == 'refs/heads/main'
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      run: |
+        set -e
+        docker login ${DOCKER_REGISTRY} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+        VERSION=$(grep '<version>' pom.xml | head -n 2 | tail -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' | xargs echo)
+        BOOT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's|<.*>||g' | xargs echo)
+        IMAGE_NAME=${DOCKER_REGISTRY}:${VERSION}
+        set +e
+        docker pull ${IMAGE_NAME}
+        set -e
+        ./mvnw -V spring-boot:build-image -Dspring-boot.build-image.imageName=${IMAGE_NAME} -Dmaven.test.skip=true -Dspring-boot.version=${BOOT_VERSION}
+        docker push ${IMAGE_NAME}
+        cat <<EOF > values.yml
+        #@data/values
+        #@overlay/match-child-defaults missing_ok=True
+        ---
+        git_repo: https://github.com/categolj/blog-translation
+        git_commit: $(git rev-parse HEAD)
+        image_name: ${IMAGE_NAME}
+        image_digest: $(docker inspect --format='{{index .RepoDigests 0}}' ${IMAGE_NAME} | awk -F '@' '{print $2}')
+        EOF
+        cat values.yml

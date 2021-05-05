@@ -75,3 +75,35 @@ jobs:
         image_digest: $(docker inspect --format='{{index .RepoDigests 0}}' ${IMAGE_NAME} | awk -F '@' '{print $2}')
         EOF
         cat values.yml
+    - name: update config
+      if: github.ref == 'refs/heads/main'
+      env:
+        REPOSITORY: making/config
+        GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+        GIT_NAME: ${{ secrets.GIT_NAME }}
+        GIT_SSH_KEY: ${{ secrets.GIT_SSH_KEY }}
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BASE: master
+        APP_NAME: blog-translation
+      run: |
+        set -ex
+        GIT_REV=$(git rev-parse HEAD)
+        COMMIT_MESSAGE="Bump to categolj/${APP_NAME}@${GIT_REV}"
+        mkdir -p ~/.ssh
+        cat > ~/.ssh/config <<EOF
+        StrictHostKeyChecking no
+        LogLevel quiet
+        EOF
+        cat > ~/.ssh/id_rsa <<EOF
+        ${GIT_SSH_KEY}
+        EOF
+        chmod 0600 ~/.ssh/*
+        git config --global user.email "${GIT_EMAIL}"
+        git config --global user.name "${GIT_NAME}"
+        git clone git@github.com:${REPOSITORY}.git
+        cd $(echo ${REPOSITORY} | awk -F '/' '{print $2}')
+        cp ../values.yml home-lab/grape/app/${APP_NAME}/values.yml
+        git diff
+        git add -A
+        git commit -m "${COMMIT_MESSAGE}"
+        git push origin ${BASE}

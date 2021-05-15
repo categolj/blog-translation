@@ -19,6 +19,7 @@
 		<spring-cloud.version>2021.0.0-SNAPSHOT</spring-cloud.version>
 		<spring-cloud-sleuth-otel.version>1.0.0-SNAPSHOT</spring-cloud-sleuth-otel.version>
 		<testcontainers.version>1.15.3</testcontainers.version>
+		<wavefront.version>2.2.0-RC1</wavefront.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -67,6 +68,10 @@
 			<artifactId>opentelemetry-exporter-otlp</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.wavefront</groupId>
+			<artifactId>wavefront-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
 			<version>1.37.1</version>
@@ -110,6 +115,13 @@
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-sleuth-otel-dependencies</artifactId>
 				<version>${spring-cloud-sleuth-otel.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.wavefront</groupId>
+				<artifactId>wavefront-spring-boot-bom</artifactId>
+				<version>${wavefront.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

@@ -63,12 +63,29 @@ jobs:
         kubeconfig: ${{ secrets.KPACK_KUBECONFIG }}
     - name: build-image
       env:
+        IMAGE_NAME: blog-translation
         GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         set -e
         echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | base64 -d > key.json
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
-        ./kp build list -n categolj
+        set +e
+        ./kp image list -n categolj | grep "${APP_NAME} "
+        exists=$?
+        set -e
+        if [ ${exists} -eq 0 ]; then
+          ./kp image patch ${APP_NAME} \
+             -n categolj \
+             --wait \
+             --local-path target/*.jar
+        else
+          ./kp image create ${APP_NAME} \
+             -n categolj \          
+             --tag ${IMAGE_NAME} \
+             --wait \
+             --local-path target/*.jar
+        fi
+        ./kp image list -n categolj     
     - name: mvn spring-boot:build-image
       if: github.ref == 'refs/heads/deprecated'
       env:

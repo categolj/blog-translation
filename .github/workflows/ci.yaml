@@ -66,7 +66,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         set -e
-        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | base64 -D > key.json
+        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | base64 -d > key.json
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
         ./kp build list -n categolj
     - name: mvn spring-boot:build-image

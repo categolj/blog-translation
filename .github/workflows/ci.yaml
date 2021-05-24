@@ -49,6 +49,7 @@ jobs:
         sed -i 's|</project>|<distributionManagement><repository><id>sonatype-snapshots</id><name>sonatype-snapshots</name><url>https://oss.sonatype.org/content/repositories/snapshots</url></repository></distributionManagement></project>|' pom.xml
         ./mvnw -V deploy -s settings.xml -Dmaven.test.skip=true -Dspring-boot.version=${BOOT_VERSION}
     - name: download-kp-cli
+      if: github.ref == 'refs/heads/main'    
       env:
         KP_VERSION: 0.2.0
       run: |
@@ -61,6 +62,7 @@ jobs:
         method: kubeconfig
         kubeconfig: ${{ secrets.KPACK_KUBECONFIG }}
     - name: build-image
+      if: github.ref == 'refs/heads/main'
       env:
         APP_NAME: blog-translation
         GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
@@ -92,7 +94,7 @@ jobs:
         fi
         ./kp image list -n categolj     
     - name: generate-config
-      if: github.ref == 'refs/heads/deprecated'    
+      if: github.ref == 'refs/heads/deprecated'
       env:
         DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
       run: |

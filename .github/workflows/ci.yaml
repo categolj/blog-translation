@@ -48,8 +48,29 @@ jobs:
         EOF
         sed -i 's|</project>|<distributionManagement><repository><id>sonatype-snapshots</id><name>sonatype-snapshots</name><url>https://oss.sonatype.org/content/repositories/snapshots</url></repository></distributionManagement></project>|' pom.xml
         ./mvnw -V deploy -s settings.xml -Dmaven.test.skip=true -Dspring-boot.version=${BOOT_VERSION}
+    - name: download-kp-cli
+      env:
+        KP_VERSION: 0.2.0
+      run: |
+        set -e
+        wget -q https://github.com/vmware-tanzu/kpack-cli/releases/download/v${KP_VERSION}/kp-darwin-${KP_VERSION} -O kp
+    - name: kubeconfig
+      uses: azure/k8s-set-context@v1
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KPACK_KUBECONFIG }}
+    - name: build-image
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
+      run: |
+        set -e
+        cat <<EOF > key.json
+        ${GOOGLE_APPLICATION_CREDENTIALS_JSON}
+        EOF
+        export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
+        ./kp build list -n categolj
     - name: mvn spring-boot:build-image
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/deprecated'
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -76,7 +97,7 @@ jobs:
         EOF
         cat values.yml
     - name: update config
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/deprecated'
       env:
         REPOSITORY: making/config
         GIT_EMAIL: ${{ secrets.GIT_EMAIL }}

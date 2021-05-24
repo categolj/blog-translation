@@ -66,11 +66,8 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         set -e
-        cat <<EOF > key.json
-        ${GOOGLE_APPLICATION_CREDENTIALS_JSON}
-        EOF
+        printf "%s" "${GOOGLE_APPLICATION_CREDENTIALS_JSON}" > key.json
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
-        kubectl get pod -n categolj -v9
         ./kp build list -n categolj
     - name: mvn spring-boot:build-image
       if: github.ref == 'refs/heads/deprecated'

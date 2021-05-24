@@ -63,7 +63,7 @@ jobs:
         kubeconfig: ${{ secrets.KPACK_KUBECONFIG }}
     - name: build-image
       env:
-        IMAGE_NAME: blog-translation
+        APP_NAME: blog-translation
         GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
         DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
       run: |
@@ -83,7 +83,7 @@ jobs:
              --local-path target/*.jar
         else
           ./kp image create ${APP_NAME} \
-             -n categolj \          
+             -n categolj \
              --tag ${IMAGE_NAME} \
              --wait \
              --local-path target/*.jar

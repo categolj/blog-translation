@@ -93,4 +93,4 @@ jobs:
              --env BP_JVM_VERSION=16 \
              --local-path target/*.jar
         fi
-        ./kp image list -n categolj
+        ./kp build list -n categolj

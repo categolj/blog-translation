@@ -92,6 +92,7 @@ jobs:
         fi
         ./kp image list -n categolj     
     - name: generate-config
+      if: github.ref == 'refs/heads/deprecated'    
       env:
         DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
       run: |
@@ -110,7 +111,7 @@ jobs:
         EOF
         cat values.yml
     - name: update config
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/deprecated'
       env:
         REPOSITORY: making/config
         GIT_EMAIL: ${{ secrets.GIT_EMAIL }}

@@ -70,6 +70,7 @@ jobs:
         ${GOOGLE_APPLICATION_CREDENTIALS_JSON}
         EOF
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
+        kubectl get pod -n categolj -v9
         ./kp build list -n categolj
     - name: mvn spring-boot:build-image
       if: github.ref == 'refs/heads/deprecated'

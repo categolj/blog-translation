@@ -84,6 +84,7 @@ jobs:
           ./kp image patch ${APP_NAME} \
              -n categolj \
              --wait \
+             --env BP_JVM_VERSION=16 \
              --local-path target/*.jar
         else
           ./kp image create ${APP_NAME} \
@@ -92,55 +93,4 @@ jobs:
              --wait \
              --local-path target/*.jar
         fi
-        ./kp image list -n categolj     
-    - name: generate-config
-      if: github.ref == 'refs/heads/deprecated'
-      env:
-        DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-      run: |
-        set -e
-        VERSION=$(grep '<version>' pom.xml | head -n 2 | tail -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' | xargs echo)
-        IMAGE_NAME=${DOCKER_REGISTRY}:${VERSION}
-        docker pull ${IMAGE_NAME}
-        cat <<EOF > values.yml
-        #@data/values
-        #@overlay/match-child-defaults missing_ok=True
-        ---
-        git_repo: https://github.com/categolj/blog-translation
-        git_commit: $(git rev-parse HEAD)
-        image_name: ${IMAGE_NAME}
-        image_digest: $(docker inspect --format='{{index .RepoDigests 0}}' ${IMAGE_NAME} | awk -F '@' '{print $2}')
-        EOF
-        cat values.yml
-    - name: update config
-      if: github.ref == 'refs/heads/deprecated'
-      env:
-        REPOSITORY: making/config
-        GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-        GIT_NAME: ${{ secrets.GIT_NAME }}
-        GIT_SSH_KEY: ${{ secrets.GIT_SSH_KEY }}
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        BASE: master
-        APP_NAME: blog-translation
-      run: |
-        set -ex
-        GIT_REV=$(git rev-parse HEAD)
-        COMMIT_MESSAGE="Bump to categolj/${APP_NAME}@${GIT_REV}"
-        mkdir -p ~/.ssh
-        cat > ~/.ssh/config <<EOF
-        StrictHostKeyChecking no
-        LogLevel quiet
-        EOF
-        cat > ~/.ssh/id_rsa <<EOF
-        ${GIT_SSH_KEY}
-        EOF
-        chmod 0600 ~/.ssh/*
-        git config --global user.email "${GIT_EMAIL}"
-        git config --global user.name "${GIT_NAME}"
-        git clone git@github.com:${REPOSITORY}.git
-        cd $(echo ${REPOSITORY} | awk -F '/' '{print $2}')
-        cp ../values.yml home-lab/grape/app/${APP_NAME}/values.yml
-        git diff
-        git add -A
-        git commit -m "${COMMIT_MESSAGE}"
-        git push origin ${BASE}
+        ./kp image list -n categolj

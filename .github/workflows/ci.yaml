@@ -66,9 +66,8 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.KPACK_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         set -e
-        printf "%s" "${GOOGLE_APPLICATION_CREDENTIALS_JSON}" > key.json
+        echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | base64 -D > key.json
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
-        cat key.json | sed 's/a//' | sed 's/b//'
         ./kp build list -n categolj
     - name: mvn spring-boot:build-image
       if: github.ref == 'refs/heads/deprecated'

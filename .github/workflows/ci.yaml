@@ -21,7 +21,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: mvn package
-      if: github.ref == 'refs/heads/deprecated'
       env:
         _JAVA_OPTIONS: -Djava.net.preferIPv4Stack=true
       run: |

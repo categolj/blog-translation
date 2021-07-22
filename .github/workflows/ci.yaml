@@ -51,12 +51,13 @@ jobs:
     - name: download-kp-cli
       if: github.ref == 'refs/heads/main'    
       env:
-        KP_VERSION: 0.2.0
+        KP_VERSION: 0.3.1
       run: |
         set -e
         wget -q https://github.com/vmware-tanzu/kpack-cli/releases/download/v${KP_VERSION}/kp-linux-${KP_VERSION} -O kp
         chmod +x ./kp
     - name: kubeconfig
+      if: github.ref == 'refs/heads/main'    
       uses: azure/k8s-set-context@v1
       with:
         method: kubeconfig
@@ -76,21 +77,10 @@ jobs:
         IMAGE_NAME=${DOCKER_REGISTRY}:${VERSION}        
         echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | base64 -d > key.json
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
-        set +e
-        ./kp image list -n categolj | grep "${APP_NAME} "
-        exists=$?
-        set -e
-        if [ ${exists} -eq 0 ]; then
-          ./kp image patch ${APP_NAME} \
-             -n categolj \
-             --wait \
-             --local-path target/*.jar
-        else
-          ./kp image create ${APP_NAME} \
-             -n categolj \
-             --tag ${IMAGE_NAME} \
-             --wait \
-             --env BP_JVM_VERSION=16 \
-             --local-path target/*.jar
-        fi
+        ./kp image save ${APP_NAME} \
+          -n categolj \
+          --tag ${IMAGE_NAME} \
+          --wait \
+          --env BP_JVM_VERSION=16 \
+          --local-path target/*.jar
         ./kp build list -n categolj

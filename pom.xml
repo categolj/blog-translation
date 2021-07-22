@@ -18,7 +18,7 @@
 		<java.version>16</java.version>
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 		<spring-cloud-sleuth-otel.version>1.0.0-SNAPSHOT</spring-cloud-sleuth-otel.version>
-		<testcontainers.version>1.15.3</testcontainers.version>
+		<testcontainers.version>1.16.0</testcontainers.version>
 		<wavefront.version>2.2.0</wavefront.version>
 	</properties>
 	<dependencies>

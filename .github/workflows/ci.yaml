@@ -82,5 +82,6 @@ jobs:
           --tag ${IMAGE_NAME} \
           --wait \
           --env BP_JVM_VERSION=16 \
-          --local-path target/*.jar
+          --git https://github.com/categolj/blog-translation.git \
+          --git-revision ${GITHUB_SHA}
         ./kp build list -n categolj

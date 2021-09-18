@@ -15,7 +15,7 @@
 	<name>blog-translation</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>16</java.version>
+		<java.version>1</java.version>
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 		<spring-cloud-sleuth-otel.version>1.0.0-M10</spring-cloud-sleuth-otel.version>
 		<testcontainers.version>1.16.0</testcontainers.version>

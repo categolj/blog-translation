@@ -85,6 +85,5 @@ jobs:
           --wait \
           --env MAVEN_OPTS=-Dspring-boot.version=${BOOT_VERSION} \
           --git https://github.com/categolj/blog-translation.git \
-          --git-revision ${GITHUB_SHA} \
-          --buildpack tanzu-buildpacks/java
+          --git-revision ${GITHUB_SHA}
         ./kp build list -n categolj

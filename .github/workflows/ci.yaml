@@ -28,7 +28,7 @@ jobs:
         BOOT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's|<.*>||g' | xargs echo)
         ./mvnw -V package -Dspring-boot.version=${BOOT_VERSION}
     - name: mvn deploy
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/deprecated'
       env:
         SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
         SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -73,15 +73,18 @@ jobs:
       run: |
         set -e
         docker login ${DOCKER_REGISTRY} -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+        BOOT_VERSION=$(grep '<version>' pom.xml | head -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' -e 's|<.*>||g' | xargs echo)        
         VERSION=$(grep '<version>' pom.xml | head -n 2 | tail -n 1 | sed -e 's|<version>||g' -e 's|</version>||g' | xargs echo)
         IMAGE_NAME=${DOCKER_REGISTRY}:${VERSION}        
         echo ${GOOGLE_APPLICATION_CREDENTIALS_JSON} | base64 -d > key.json
         export GOOGLE_APPLICATION_CREDENTIALS=$PWD/key.json
+        set -x
         ./kp image save ${APP_NAME} \
           -n categolj \
           --tag ${IMAGE_NAME} \
           --wait \
           --env BP_JVM_VERSION=16 \
+          --env MAVEN_OPTS=-Dspring-boot.version=${BOOT_VERSION} \
           --git https://github.com/categolj/blog-translation.git \
           --git-revision ${GITHUB_SHA}
         ./kp build list -n categolj

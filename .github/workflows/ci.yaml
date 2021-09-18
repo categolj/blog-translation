@@ -83,6 +83,7 @@ jobs:
           -n categolj \
           --tag ${IMAGE_NAME} \
           --wait \
+          --env BP_JVM_VERSION=17 \          
           --env MAVEN_OPTS=-Dspring-boot.version=${BOOT_VERSION} \
           --git https://github.com/categolj/blog-translation.git \
           --git-revision ${GITHUB_SHA}

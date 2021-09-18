@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-java@v1
       with:
-        java-version: '16.x'
+        java-version: '17.x'
     - uses: actions/cache@v1
       with:
         path: ~/.m2/repository
@@ -83,8 +83,8 @@ jobs:
           -n categolj \
           --tag ${IMAGE_NAME} \
           --wait \
-          --env BP_JVM_VERSION=16 \
           --env MAVEN_OPTS=-Dspring-boot.version=${BOOT_VERSION} \
           --git https://github.com/categolj/blog-translation.git \
-          --git-revision ${GITHUB_SHA}
+          --git-revision ${GITHUB_SHA} \
+          --buildpack tanzu-buildpacks/java
         ./kp build list -n categolj

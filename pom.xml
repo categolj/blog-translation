@@ -19,7 +19,7 @@
 		<spring-cloud.version>2020.0.4</spring-cloud.version>
 		<spring-cloud-sleuth-otel.version>1.0.0-M10</spring-cloud-sleuth-otel.version>
 		<testcontainers.version>1.16.0</testcontainers.version>
-		<wavefront.version>2.2.0</wavefront.version>
+		<wavefront.version>2.2.1</wavefront.version>
 	</properties>
 	<dependencies>
 		<dependency>
